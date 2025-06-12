@@ -1,0 +1,37 @@
+{
+	"schemaVersion": 1,
+	"id": "easyrevive",
+	"version": "${version}",
+	"name": "Revive Rod",
+	"description": "Revive your friends with a new item!",
+	"authors": [
+		"Ynotnaexists"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/reviverod/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"ynotnaexists.easyrevive.ReviveRod"
+		],
+		"client": [
+			"ynotnaexists.easyrevive.client.ReviveRodClient"
+		]
+	},
+	"mixins": [
+		"reviverod.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.13",
+		"minecraft": "~1.21.5",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

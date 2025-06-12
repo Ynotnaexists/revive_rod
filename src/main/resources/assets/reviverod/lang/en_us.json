@@ -1,0 +1,8 @@
+{
+  "block.reviverod.revive_rod": "Revive Rod",
+  "reviverod.revive_screen_message": "You are being revived.",
+  "revivescreen.revive_accept": "Accept Revive",
+  "revivescreen.revive_decline": "Decline Revive",
+  "revive.fail.broken_rod": "Revive Rod was broken before you were revived.",
+  "sound.block.revive_rod.activate": "Revive Rod Activates"
+}

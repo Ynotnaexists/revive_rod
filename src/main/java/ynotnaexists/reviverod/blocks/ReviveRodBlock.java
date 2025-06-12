@@ -1,0 +1,129 @@
+package ynotnaexists.reviverod.blocks;
+
+import com.mojang.serialization.MapCodec;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.minecraft.block.*;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.*;
+import net.minecraft.world.block.OrientationHelper;
+import net.minecraft.world.tick.ScheduledTickView;
+import org.jetbrains.annotations.Nullable;
+import ynotnaexists.reviverod.ReviveManager;
+
+public class ReviveRodBlock extends RodBlock implements Waterloggable {
+    public static final BooleanProperty WATERLOGGED;
+    public static final BooleanProperty POWERED;
+    public static final MapCodec<ReviveRodBlock> CODEC = createCodec(ReviveRodBlock::new);
+
+    public MapCodec<? extends RodBlock> getCodec() {return CODEC;}
+
+    public ReviveRodBlock(AbstractBlock.Settings settings) {
+        super(settings);
+        this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.UP).with(WATERLOGGED, false).with(POWERED, false));
+    }
+
+    @Override
+    public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+        if (world.isClient) return;
+
+        for (ServerPlayerEntity player : ReviveManager.findDeadPlayersFromLifeRodBlockPos(pos, world)) {
+            if (player == null) continue;
+            ServerPlayerEvents.AFTER_RESPAWN.register(new ReviveManager(player, pos));
+        }
+    }
+
+    @Override
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
+        boolean bl = fluidState.getFluid() == Fluids.WATER;
+        return this.getDefaultState().with(FACING, ctx.getSide()).with(WATERLOGGED, bl);
+    }
+
+    @Override
+    protected BlockState getStateForNeighborUpdate(
+            BlockState state,
+            WorldView world,
+            ScheduledTickView tickView,
+            BlockPos pos,
+            Direction direction,
+            BlockPos neighborPos,
+            BlockState neighborState,
+            Random random
+    ) {
+        if ((Boolean)state.get(WATERLOGGED)) {
+            tickView.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+        }
+
+        return super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
+    }
+
+    @Override
+    protected FluidState getFluidState(BlockState state) {
+        return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
+    }
+
+    @Override
+    protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+        return (Boolean) state.get(POWERED) ? 15 : 0;
+    }
+
+    @Override
+    protected int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+        return (Boolean) state.get(POWERED) && state.get(FACING) == direction ? 15 : 0;
+    }
+
+    public void setIsPowered(BlockState state, World world, BlockPos pos, boolean powered) {
+        world.setBlockState(pos, state.with(POWERED, powered), Block.NOTIFY_ALL);
+        this.updateNeighbors(state, world, pos);
+        world.scheduleBlockTick(pos, this, 8);
+        world.syncWorldEvent(WorldEvents.ELECTRICITY_SPARKS, pos, state.get(FACING).getAxis().ordinal());
+    }
+
+    private void updateNeighbors(BlockState state, World world, BlockPos pos) {
+        Direction direction = state.get(FACING).getOpposite();
+        world.updateNeighborsAlways(pos.offset(direction), this, OrientationHelper.getEmissionOrientation(world, direction, (Direction)null));
+    }
+
+    @Override
+    protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        this.updateNeighbors(state, world, pos);
+    }
+
+    @Override
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        if ((Boolean) state.get(POWERED)) {
+            this.updateNeighbors(state, world, pos);
+        }
+    }
+
+    @Override
+    protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+        if (!state.isOf(oldState.getBlock())) {
+            if ((Boolean) state.get(POWERED) && !world.getBlockTickScheduler().isQueued(pos, this)) {
+                world.setBlockState(pos, state.with(POWERED, false), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
+            }
+        }
+    }
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        builder.add(FACING, WATERLOGGED, POWERED);
+    }
+
+    static {
+        WATERLOGGED = Properties.WATERLOGGED;
+        POWERED = Properties.POWERED;
+    }
+}

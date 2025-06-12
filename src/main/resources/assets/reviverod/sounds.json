@@ -1,0 +1,8 @@
+{
+  "block.revive_rod.activate": {
+    "subtitle": "sound.block.revive_rod.activate",
+    "sounds": [
+      "reviverod:revive_rod_activate"
+    ]
+  }
+}

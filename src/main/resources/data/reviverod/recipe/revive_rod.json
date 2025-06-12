@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "S": "minecraft:soul_sand",
+    "L": "minecraft:lightning_rod"
+  },
+  "pattern": [
+    "A",
+    "S",
+    "L"
+  ],
+  "result": {
+    "count": 1,
+    "id": "reviverod:revive_rod"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "reviverod:block/revive_rod"
+  }
+}
