@@ -1,7 +1,7 @@
 {
 	"schemaVersion": 1,
-	"id": "easyrevive",
-	"version": "${version}",
+	"id": "reviverod",
+	"version": "1.0",
 	"name": "Revive Rod",
 	"description": "Revive your friends with a new item!",
 	"authors": [
@@ -16,10 +16,10 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"ynotnaexists.easyrevive.ReviveRod"
+			"ynotnaexists.reviverod.ReviveRod"
 		],
 		"client": [
-			"ynotnaexists.easyrevive.client.ReviveRodClient"
+			"ynotnaexists.reviverod.client.ReviveRodClient"
 		]
 	},
 	"mixins": [
