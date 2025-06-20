@@ -7,7 +7,7 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 import ynotnaexists.reviverod.ReviveRod;
 
-public record InitializeReviveS2CPayload() implements CustomPayload, PacketCallbacks {
+public record InitializeReviveS2CPayload() implements CustomPayload {
 
     public static final Identifier INITIALIZE_REVIVE_PAYLOAD_ID = Identifier.of(ReviveRod.MOD_ID, "initialize_revive");
     public static final CustomPayload.Id<InitializeReviveS2CPayload> ID = new CustomPayload.Id<>(INITIALIZE_REVIVE_PAYLOAD_ID);

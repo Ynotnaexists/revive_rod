@@ -9,6 +9,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.*;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -21,7 +22,6 @@ public class ReviveScreen extends Screen {
 
     private final List<ButtonWidget> buttons = Lists.<ButtonWidget>newArrayList();
     private final boolean isHardcore;
-    private ButtonWidget titleScreenButton;
     private final Text message = Text.translatable("reviverod.revive_screen_message");
 
     public ReviveScreen(@Nullable Text message, boolean isHardcore) {
@@ -31,6 +31,7 @@ public class ReviveScreen extends Screen {
 
     @Override
     protected void init() {
+        ButtonWidget titleScreenButton;
         this.buttons.clear();
         ClientPlayerEntity player = this.client.player;
         Text acceptText = Text.translatable("revivescreen.revive_accept");
@@ -44,7 +45,7 @@ public class ReviveScreen extends Screen {
             player.requestRespawn();
             button.active = false;
         }).dimensions(this.width / 2 - 100, this.height / 4 + 84, 200, 20).build()));
-        this.titleScreenButton = this.addDrawableChild(
+        titleScreenButton = addDrawableChild(
                 ButtonWidget.builder(
                                 Text.translatable("deathScreen.titleScreen"),
                                 button -> this.client.getAbuseReportContext().tryShowDraftScreen(this.client, this, this::onTitleScreenButtonClicked, true)
@@ -52,17 +53,17 @@ public class ReviveScreen extends Screen {
                         .dimensions(this.width / 2 - 100, this.height / 4 + 108, 200, 20)
                         .build()
         );
-        this.buttons.add(this.titleScreenButton);
+        this.buttons.add(titleScreenButton);
         this.setButtonsActive(true);
     }
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
         super.render(context, mouseX, mouseY, deltaTicks);
-        context.getMatrices().push();
-        context.getMatrices().scale(2.0F, 2.0F, 2.0F);
+        context.getMatrices().pushMatrix();
+        context.getMatrices().scale(2.0F, 2.0F);
         context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2 / 2, 30, 16777215);
-        context.getMatrices().pop();
+        context.getMatrices().popMatrix();
         context.drawCenteredTextWithShadow(this.textRenderer, this.message, this.width / 2, 85, 16777215);
         if (mouseY > 85 && mouseY < 85 + 9) {
             Style style = this.getTextComponentUnderMouse(mouseX);
@@ -113,10 +114,10 @@ public class ReviveScreen extends Screen {
 
     private void quitLevel() {
         if (this.client.world != null) {
-            this.client.world.disconnect();
+            this.client.world.disconnect(ClientWorld.QUITTING_MULTIPLAYER_TEXT);
         }
 
-        this.client.disconnect(new MessageScreen(Text.translatable("menu.savingLevel")));
+        this.client.disconnectWithSavingScreen();
         this.client.setScreen(new TitleScreen());
     }
 
