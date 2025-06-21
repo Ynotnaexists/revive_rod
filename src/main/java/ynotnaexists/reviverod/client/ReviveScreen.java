@@ -22,10 +22,10 @@ public class ReviveScreen extends Screen {
 
     private final List<ButtonWidget> buttons = Lists.<ButtonWidget>newArrayList();
     private final boolean isHardcore;
-    private final Text message = Text.translatable("reviverod.revive_screen_message");
+    private final Text message = Text.translatable("revivescreen.revive_screen_message");
 
-    public ReviveScreen(@Nullable Text message, boolean isHardcore) {
-        super(message);
+    public ReviveScreen( boolean isHardcore) {
+        super(Text.translatable("revivescreen.revive_screen_title"));
         this.isHardcore = isHardcore;
     }
 

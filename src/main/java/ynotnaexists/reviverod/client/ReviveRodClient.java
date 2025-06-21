@@ -14,7 +14,7 @@ public class ReviveRodClient implements ClientModInitializer {
             ClientPlayerEntity player = context.client().player;
             if (player.getWorld() == null) return;
 
-            context.client().setScreen(new ReviveScreen(Text.literal("Reviving..."), context.client().world.getLevelProperties().isHardcore()));
+            context.client().setScreen(new ReviveScreen(context.client().world.getLevelProperties().isHardcore()));
         });
     }
 }
