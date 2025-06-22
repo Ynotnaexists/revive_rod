@@ -13,6 +13,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import org.jetbrains.annotations.Nullable;
 import ynotnaexists.reviverod.networking.CancelReviveC2SPayload;
 
@@ -24,7 +25,7 @@ public class ReviveScreen extends Screen {
     private final boolean isHardcore;
     private final Text message = Text.translatable("revivescreen.revive_screen_message");
 
-    public ReviveScreen( boolean isHardcore) {
+    public ReviveScreen(boolean isHardcore) {
         super(Text.translatable("revivescreen.revive_screen_title"));
         this.isHardcore = isHardcore;
     }
@@ -62,9 +63,9 @@ public class ReviveScreen extends Screen {
         super.render(context, mouseX, mouseY, deltaTicks);
         context.getMatrices().pushMatrix();
         context.getMatrices().scale(2.0F, 2.0F);
-        context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2 / 2, 30, 16777215);
+        context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2 / 2, 30, Colors.WHITE);
         context.getMatrices().popMatrix();
-        context.drawCenteredTextWithShadow(this.textRenderer, this.message, this.width / 2, 85, 16777215);
+        context.drawCenteredTextWithShadow(this.textRenderer, this.message, this.width / 2, 85, Colors.WHITE);
         if (mouseY > 85 && mouseY < 85 + 9) {
             Style style = this.getTextComponentUnderMouse(mouseX);
             context.drawHoverEvent(this.textRenderer, style, mouseX, mouseY);
