@@ -1,0 +1,68 @@
+name: Run Minecraft Client
+
+on:
+workflow_dispatch: # Allows manual triggering
+push:
+branches: [ main, develop ]
+pull_request:
+branches: [ main ]
+
+jobs:
+test-minecraft-client:
+runs-on: ubuntu-latest
+
+```
+steps:
+- name: Checkout repository
+  uses: actions/checkout@v4
+  
+- name: Set up JDK 21
+  uses: actions/setup-java@v4
+  with:
+    java-version: '21'
+    distribution: 'temurin'
+    
+- name: Cache Gradle packages
+  uses: actions/cache@v3
+  with:
+    path: |
+      ~/.gradle/caches
+      ~/.gradle/wrapper
+    key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+    restore-keys: |
+      ${{ runner.os }}-gradle-
+      
+- name: Grant execute permission for gradlew
+  run: chmod +x gradlew
+  
+
+    
+- name: Build mod
+  run: ./gradlew build
+  
+- name: Run Minecraft client (crash test)
+  run: |
+    timeout 30 ./gradlew runClient || exit_code=$?
+    if [ ${exit_code:-0} -eq 124 ]; then
+      exit 0
+    elif [ ${exit_code:-0} -ne 0 ]; then
+      exit 1
+    
+- name: Upload crash reports (if any)
+  uses: actions/upload-artifact@v4
+  if: failure()
+  with:
+    name: crash-reports
+    path: |
+      run/crash-reports/
+      run/logs/
+    retention-days: 5
+    
+- name: Upload test results
+  uses: actions/upload-artifact@v4
+  if: always()
+  with:
+    name: test-results
+    path: build/reports/
+    retention-days: 5
+```
