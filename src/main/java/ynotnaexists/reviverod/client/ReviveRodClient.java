@@ -12,7 +12,7 @@ public class ReviveRodClient implements ClientModInitializer {
     public void onInitializeClient() {
         ClientPlayNetworking.registerGlobalReceiver(InitializeReviveS2CPayload.ID, (payload, context) -> {
             ClientPlayerEntity player = context.client().player;
-            if (player.getWorld() == null) return;
+            if (player.getEntityWorld() == null) return;
 
             context.client().setScreen(new ReviveScreen(context.client().world.getLevelProperties().isHardcore()));
         });

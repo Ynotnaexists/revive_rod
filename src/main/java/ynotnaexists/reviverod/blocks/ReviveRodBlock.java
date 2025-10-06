@@ -36,7 +36,7 @@ public class ReviveRodBlock extends RodBlock implements Waterloggable {
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-        if (world.isClient) return;
+        if (world.isClient()) return;
 
         for (ServerPlayerEntity player : ReviveManager.findDeadPlayersFromLifeRodBlockPos(pos, world)) {
             if (player == null) continue;
@@ -110,10 +110,10 @@ public class ReviveRodBlock extends RodBlock implements Waterloggable {
 
     @Override
     protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        if (!state.isOf(oldState.getBlock())) {
-            if ((Boolean) state.get(POWERED) && !world.getBlockTickScheduler().isQueued(pos, this)) {
+        if (state.isOf(oldState.getBlock())) return;
+
+        if ((Boolean) state.get(POWERED) && !world.getBlockTickScheduler().isQueued(pos, this)) {
                 world.setBlockState(pos, state.with(POWERED, false), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
-            }
         }
     }
 

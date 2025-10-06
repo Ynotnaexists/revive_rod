@@ -31,7 +31,7 @@ public class ReviveManager implements ServerPlayerEvents.AfterRespawn, ServerPla
     public ReviveManager(ServerPlayerEntity player, BlockPos lifeRodBlockPos) {
         this.player = player;
         this.lifeRodBlockPos = lifeRodBlockPos;
-        this.world = player.getWorld();
+        this.world = player.getEntityWorld();
         reviveManagers.add(this);
         ServerPlayerEvents.AFTER_RESPAWN.register(this);
         ServerPlayConnectionEvents.DISCONNECT.register(this);
@@ -82,7 +82,7 @@ public class ReviveManager implements ServerPlayerEvents.AfterRespawn, ServerPla
 
         return PlayerLookup.all(world.getServer())
                 .stream()
-                .filter(p -> searchBox.contains(p.getPos()) && p.isDead() && p instanceof PlayerEntity)
+                .filter(p -> searchBox.contains(p.getBlockPos()) && p.isDead() && p instanceof PlayerEntity)
                 .toList();
     }
 

@@ -32,7 +32,7 @@ public class ReviveRod implements ModInitializer {
 				existing.dispose();
 			}
 
-			new ReviveManager(deadPlayer, ReviveManager.findLifeRodBlockFromPlayer(deadPlayer, deadPlayer.getWorld()));
+			new ReviveManager(deadPlayer, ReviveManager.findLifeRodBlockFromPlayer(deadPlayer, deadPlayer.getEntityWorld()));
         });
 
 		ServerPlayNetworking.registerGlobalReceiver(CancelReviveC2SPayload.ID, (payload, context) -> {
